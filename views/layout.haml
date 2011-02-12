@@ -1,4 +1,5 @@
-%div#content=yield
-%div#lang
-  %a{:href=> '?locale=ru'} ru
-  %a{:href=> '?locale=en'} en
+%body{:onload=> "initialize()"}
+  %div#content=yield
+  %p#lang
+    %a{:href=> '?locale=ru'} ru
+    %a{:href=> '?locale=en'} en

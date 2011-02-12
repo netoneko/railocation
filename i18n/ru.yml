@@ -3,6 +3,10 @@ index:
 location:
   stations: Список доступных станций
 transport:
+  station: Станция
+  route: Маршрут
   routes: Маршруты
   bus: Автобус
+  bus.short: A
   tram: Трамвай
+  tram.short: T

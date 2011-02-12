@@ -3,6 +3,10 @@ index:
 location:
   stations: List of nearby stations
 transport:
+  station: Station
+  route: Route
   routes: Routes
   bus: bus
+  bus.short: B
   tram: tram
+  tram.short: T

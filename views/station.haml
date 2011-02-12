@@ -1,5 +1,8 @@
 %div.station
-	%h3 
-		%a{:href=> "/station/#{station[:long_id]}"}= "#{station[:name]} (#{t.transport[station[:type]]})"
-	%p= "#{t.transport.routes}: #{station[:routes].join(', ')}"
-	%img{:src => google_map_static(station[:coords]) }
+  %h3 
+    %a{:href => "/station/#{station[:long_id]}"}= "#{station[:name]} (#{t.transport[station[:type]]})"
+  %p
+    #{t.transport.routes}:
+    =station[:routes].collect{ |route_id| link_to_route(station[:city], station[:type], route_id, station[:name]) }.join(', ')
+  %p
+    %img{:src => google_map_static_station(station[:coords]) }
