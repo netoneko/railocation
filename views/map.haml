@@ -1,5 +1,21 @@
 %script{:src=>"http://maps.google.com/maps/api/js?sensor=false"}
 :javascript
+  var markers = {};
+  var green_marker = null;
+  var map;
+  
+  function bind(fn, arg) {
+    return function() { fn(arg) };
+  }
+  
+  function highlightMarker(marker) {
+    if (green_marker != null)
+      green_marker.setIcon('http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png')
+    green_marker = marker;
+    
+    green_marker.setIcon('http://maps.google.com/intl/en_us/mapfiles/ms/micons/green.png')
+  }
+  
   function initialize() {
     var myLatLng = new google.maps.LatLng(#{google_map_get_center_for_route(route)});
     var myOptions = {
@@ -8,7 +24,7 @@
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
  
-    var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
  
     var stationsCoordinates = [new google.maps.LatLng(#{route.values.join('), new google.maps.LatLng(')})];
 
@@ -21,6 +37,12 @@
       strokeWeight: 2
     });
  
-   path.setMap(map);
+    path.setMap(map);
+    
+    for(var key in markers) {
+      google.maps.event.addListener(markers[key], 'click', bind(highlightMarker, markers[key]));
+    }
+    
+    highlightMarker(green_marker = markers["#{params[:from]}"])
   }
 %div{:id=>"map_canvas", :style=>"width:400px; height:400px;"}

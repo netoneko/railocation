@@ -63,8 +63,8 @@ helpers do
   def google_map_js_route(route)
   	result = ""
 		route.each_pair do |key, value|
-			result << "new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
-      title:\"#{key}\"});"
+			result << "markers['#{key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
+      title:\"#{key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png'});"
     end
 		result
   end

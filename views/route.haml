@@ -2,7 +2,7 @@
 %p #{city}
 -if params[:from]
 	%p #{t.transport.station} #{params[:from]}
-	%p 
-		%img{:src => google_map_static_route(route, route_type, params[:from])}
-- else
-	= haml :map, :locals => {:route => route}
+/	%p 
+/		%img{:src => google_map_static_route(route, route_type, params[:from])}
+/- else
+= haml :map, :locals => {:route => route}
