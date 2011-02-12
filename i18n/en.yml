@@ -1,0 +1,8 @@
+index:
+  description: Location service for public transportation fans. Not even beta.
+location:
+  stations: List of nearby stations
+transport:
+  routes: Routes
+  bus: bus
+  tram: tram
