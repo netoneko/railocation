@@ -1,9 +1,10 @@
 INSTALLATION
-	1. $ sudo gem install sinatra sinatra-r18n haml thin redis SystemTimer --no-rdoc --no-ri
-	2. ON LINUX 
-		 $ sudo apt-get install redis-server
-		 ON MAC OS X 
-		 $ sudo port install redis
+1. $ sudo gem install sinatra sinatra-r18n haml thin redis SystemTimer --no-rdoc --no-ri
+2. ON LINUX 
+ $ sudo apt-get install redis-server
+ ON MAC OS X 
+ $ sudo port install redis
 
 HOW TO RUN IT ON YOUR DEV BOX		 
-	1. $ ruby -rrubygems index.rb
+1. $ cd conf/ && redis-server redis.conf && cd ..
+2. $ ruby1.9 -rrubygems index.rb
