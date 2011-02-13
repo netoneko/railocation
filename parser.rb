@@ -6,7 +6,7 @@ require 'locator.rb'
 
 results = {}
 routes = ((1..27).collect{|i| i} + (31..33).collect{|i| i})
-#routes = [1]
+#routes = [27]
 
 routes.each do |i|
   text = ""
@@ -28,7 +28,7 @@ routes.each do |i|
     line = line.strip()
 #    puts line
     if not (index = line.index(')')).nil?
-      path << line[index + 1, line.size].gsub(',', '').gsub('ул', '').gsub('пл', '').gsub('.', '').strip()
+      path << line[index + 1, line.size].gsub(',', '').gsub('.', '').gsub('ул ', '').gsub('пл ', 'площадь').gsub("\"", "\\\"").strip()
     end
   end
 
@@ -51,17 +51,22 @@ results.each_pair do |key, value|
   r.del ekb_tram_custom_key
   value.each_index do |i|
     station = value[i]
-    
-    puts station
-    local = nil
-    coords = r.hget(ekb_tram_stations_key, station) || extract_geocode(locate(station))
-    if coords.nil? 
-      unable_to_locate << station
-      coords = ""
+    ekb_tram_custom_key_routes = "#{ekb_tram_stations_key}:#{station}:routes"
+    r.sadd(ekb_tram_custom_key_routes, station)
+
+    if true #building routes
+      puts station
+      local = nil
+      coords = r.hget(ekb_tram_stations_key, station) || extract_geocode(locate(station))
+      if coords.nil? 
+        unable_to_locate << station
+        coords = ""
+      end
+      
+      station += " " if !r.hget(ekb_tram_stations_key, station).nil?
+      r.hset(ekb_tram_stations_key, station, coords)
+      r.hset(ekb_tram_custom_key, station, coords)
     end
-    
-    r.hset(ekb_tram_stations_key, station, coords)
-    r.hset(ekb_tram_custom_key, station, coords)
   end
 
   puts "#{key}/#{value.size}"

@@ -1,6 +1,6 @@
 %div.station
-  %h3 
-    %a{:href => "/station/#{station[:long_id]}"}= "#{station[:name]} (#{t.transport[station[:type]]})"
+  %h3
+    %a{:href => "/city/#{station[:city]}/station/#{station[:name]}"}= "#{station[:name]} (#{t.transport[station[:type]]})"
   %p
     #{t.transport.routes}:
     =station[:routes].collect{ |route_id| link_to_route(station[:city], station[:type], route_id, station[:name]) }.join(', ')

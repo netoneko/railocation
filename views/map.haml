@@ -21,8 +21,8 @@
     var myOptions = {
       zoom: 12,
       center: myLatLng,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDefaultUI: true
+      mapTypeId: google.maps.MapTypeId.ROADMAP//,
+      //disableDefaultUI: true
     };
  
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -46,4 +46,7 @@
     
     highlightMarker(green_marker = markers["#{params[:from]}"])
   }
-%div{:id=>"map_canvas", :style=>"width:400px; height:400px;"}
+%div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
+%ol
+  - route.each_pair do |key, value|
+    %li= "#{key} (#{value})"
