@@ -2,6 +2,7 @@ index:
   description: Location service for public transportation fans. Not even beta.
 location:
   stations: List of nearby stations
+  yours: You're here
 transport:
   station: Station
   route: Route

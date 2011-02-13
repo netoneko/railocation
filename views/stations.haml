@@ -1,0 +1,3 @@
+%h2= t.location.stations
+-stations.each do |station|
+  =haml :station, :locals => {:station => station}

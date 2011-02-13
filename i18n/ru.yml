@@ -2,6 +2,7 @@ index:
   description: Геолокация для фанатов общественного транспорта. Даже не бета.
 location:
   stations: Список доступных станций
+  yours: Вы здесь
 transport:
   station: Станция
   route: Маршрут
