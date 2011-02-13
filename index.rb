@@ -77,22 +77,13 @@ helpers do
 		"#{(right + left)/2},#{(top + bottom)/2}"
 	end
   
-  def search_nearby_stations(latitude, longitude)
-		puts "#{latitude}, #{longitude}"
-		"7 + 12;"
-  end
-  
   def link_to_route(city, route_type, route_id, station)
   	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?from=#{station}\"} #{route_id}"
   end
   
-  def link_to_check_in
-  	
-  end
-  
-  @redis = Redis.new(:port => 6790)
+  @@redis = Redis.new(:port => 6790)
   def redis
-  	@redis
+  	@@redis
   end
   
   def get_postal_code(city)
@@ -103,9 +94,33 @@ helpers do
   	redis.hgetall("#{get_postal_code(city)}:#{type}_stations")
   end
   
+  def get_local_stations(latitude, longitude)
+		puts "#{latitude}, #{longitude}"
+		city = 'Yekaterinburg'
+		type = 'tram'
+		
+		stations = {}
+		get_stations(city, type).each_pair do |name, coords|
+			split = coords.split(',')
+			station_latitude = split.first.to_f
+			station_longitude = split.last.to_f
+			
+			distance = ((station_latitude - latitude) ** 2 + (station_longitude - longitude) ** 2) ** 1/2
+			stations[name] = distance.to_f
+		end
+		
+		stations = stations.sort {|a, b| a[1] <=> b[1]}
+		puts stations
+		stations.collect do |station|
+			result = get_station(city, type, station.first)
+			result[:distance] = station.last
+			result
+		end
+  end
+  
   def get_station(city, type, name)
-  	name = name.force_encoding('utf-8').strip()
-  	city = city.force_encoding('utf-8')
+  	name = name.force_encoding('utf-8').strip() if !name.frozen?
+  	city = city.force_encoding('utf-8') if !city.frozen?
   	station = {}
   	station[:name] = name
   	station[:routes] = get_routes_from_station(city, type, name)
@@ -134,7 +149,12 @@ get '/' do
 end
 
 get '/location' do
-	haml :location
+	locals = {}
+	if !params[:latitude].nil? || !params[:longitude].nil?
+		locals[:stations] = get_local_stations(params[:latitude].to_f, params[:longitude].to_f)
+	end
+
+	haml :location, :locals => locals
 end
 
 get '/city/:city/station/:station_id' do |city, station_id|
@@ -145,14 +165,4 @@ end
 get '/city/:city/:route_type/:route_id' do |city, route_type, route_id|
 	route = get_route(city, route_type, route_id)
 	haml :route, :locals => {:city => city, :route_id => route_id, :route_type => route_type, :route => route}
-end
-
-get '/map' do
-	haml :map, :locals => {:city => 'Yekaterinburg', :route => @@route_23}
-end
-
-get '/locate_js' do
-	puts params
-	"" if params[:latitude].nil? || params[:longitude].nil?
-	search_nearby_stations(params[:latitude].to_f, params[:longitude].to_f)
 end

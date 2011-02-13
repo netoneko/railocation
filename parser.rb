@@ -63,8 +63,9 @@ results.each_pair do |key, value|
         coords = ""
       end
       
-      station += " " if !r.hget(ekb_tram_stations_key, station).nil?
       r.hset(ekb_tram_stations_key, station, coords)
+      # haven't tested
+      station += " " if !r.hget(ekb_tram_custom_key, station).nil?
       r.hset(ekb_tram_custom_key, station, coords)
     end
   end

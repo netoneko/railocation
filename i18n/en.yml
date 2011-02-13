@@ -3,6 +3,8 @@ index:
 location:
   stations: List of nearby stations
   yours: You're here
+  fail: Sorry, we can't determine your location.
+  trying: We're trying to determine your location, please wait...
 transport:
   station: Station
   route: Route
