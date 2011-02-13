@@ -1,8 +1,12 @@
 #coding: utf-8
+$: << "."
 require 'iconv'
+require 'redis'
+require 'locator.rb'
 
 results = {}
 routes = ((1..27).collect{|i| i} + (31..33).collect{|i| i})
+#routes = [1]
 
 routes.each do |i|
   text = ""
@@ -22,17 +26,59 @@ routes.each do |i|
   path = []
   text.split('<br>').each do |line|
     line = line.strip()
+#    puts line
     if not (index = line.index(')')).nil?
-      path << line[index + 2, line.size].gsub(',', '').gsub('ул.', '').gsub('.', '').strip()
+      path << line[index + 1, line.size].gsub(',', '').gsub('ул', '').gsub('пл', '').gsub('.', '').strip()
     end
   end
 
   results[i] = path if !path.empty?
 end
 
+r = Redis.new(:port => 6790)
+
+ekb_trams_key = "620:tram" # postal code, tram/bus
+r.del ekb_trams_key
+
+ekb_tram_stations_key = "620:tram_stations"
+r.del ekb_tram_stations_key
+
+unable_to_locate = []
 results.each_pair do |key, value|
+  r.sadd(ekb_trams_key, key)
+
+  ekb_tram_custom_key = "#{ekb_trams_key}:#{key}"
+  r.del ekb_tram_custom_key
+  value.each_index do |i|
+    station = value[i]
+    
+    puts station
+    local = nil
+    coords = r.hget(ekb_tram_stations_key, station) || extract_geocode(locate(station))
+    if coords.nil? 
+      unable_to_locate << station
+      coords = ""
+    end
+    
+    r.hset(ekb_tram_stations_key, station, coords)
+    r.hset(ekb_tram_custom_key, station, coords)
+  end
+
   puts "#{key}/#{value.size}"
 end
 
 puts '*' * 10
-puts routes - results.keys
+puts "Could not parse: #{routes - results.keys}"
+puts '*' * 10
+puts r.smembers(ekb_trams_key)
+puts '*' * 10
+results.each_pair do |key, value|
+  ekb_tram_custom_key = "#{ekb_trams_key}:#{key}"
+  puts ekb_tram_custom_key
+  puts r.hgetall(ekb_tram_custom_key)
+end
+puts '*' * 10
+puts ekb_tram_stations_key
+puts r.hkeys(ekb_tram_stations_key).size
+puts r.hgetall(ekb_tram_stations_key)
+puts unable_to_locate

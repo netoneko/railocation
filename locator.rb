@@ -13,46 +13,19 @@ def locate(station)
    result = JSON.parse(data)
 
    # if the hash has 'Error' as a key, we raise an error
-   raise "web service error" if result['status'] != 'OK'
-      
+   sleep(0.3)
+   if result['status'] != 'OK'
+	   puts "web service error #{result['status']}" 
+	   return nil
+	 end
+
    result
 end
 
-locations = ['Каменные палатки', 'Профессорская', 'Гагарина', 
-'Первомайская', 
-'Блюхера', 
-'Советская', 
-'Пионеров', 
-'Кондукторская', 
-'Пионерская', 
-'Железнодорожный вокзал', 
-'Управление дороги', 
-'9 Января', 
-'Папанина', 
-'Шейнкмана', 
-'Дворец Молодёжи', 
-'ВИЗ-бульвар', 
-'Крылова', 
-'Кирова', 
-'Колмогорова', 
-'Верх-исетский рынок', 
-'ЦХП', 
-'Ротор', 
-'Уральских коммунаров', 
-'Бебеля', 
-'Пехотинцев', 
-'Автомагистральная', 
-'Сварщиков', 
-'Лукиных',
-'Диагностический центр', 
-'40 лет Октября', 
-'Машиностроителей']
+def extract_geocode(location)
+	return nil if location.nil?
 
-final = ""
-
-locations.each do |location|
-	results = locate(location)['results']
-	
+	results = location['results']
 	geolocation = {}
 	
 	results.each do |result|
@@ -62,16 +35,17 @@ locations.each do |location|
   	geolocation = result['geometry']['location'] if results.size == 1 || zip_code != '620000'
 	end
 
-	puts location
 	geolocation_printed = nil
 	if geolocation.empty?
-		puts 'HOLY FUCK! UNRESOLVED' 
-	else
-		puts geolocation_printed = "#{geolocation['lat']},#{geolocation['lng']}"
+		puts 'HOLY FUCK! UNRESOLVED'
+		if results.size > 1 
+			geolocation = results[0]['geometry']['location']
+		else
+			return nil
+		end
 	end
-	final << "'#{location}' => '#{geolocation_printed}', "
 	
-	puts '*' * 40
+	"#{geolocation['lat']},#{geolocation['lng']}"
 end
 
-puts final
+#puts extract_geocode(locate('Вторчермет'))
