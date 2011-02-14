@@ -14,6 +14,8 @@ set :default_locale, 'en'
 set :sessions, true
 
 helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
   def mobile?
     @mobile = [/AppleWebKit.*Mobile/,/Android.*AppleWebKit/].any? {|r| request.env['HTTP_USER_AGENT'] =~ r} if @mobile.nil?
     @mobile
@@ -53,8 +55,8 @@ helpers do
   def google_map_js_route(route)
   	result = ""
 		route.each_pair do |key, value|
-			result << "markers['#{key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
-      title:\"#{key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png'});"
+			result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
+      title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png'});"
     end
 		result
   end
@@ -137,6 +139,10 @@ helpers do
   
   def get_route(city, type, name)
   	redis.hgetall("#{get_postal_code(city)}:#{type}:#{name.strip()}")
+  end
+  
+  def get_route_list(city, type)
+  	redis.smembers("#{get_postal_code(city)}:#{type}")
   end
 end
 

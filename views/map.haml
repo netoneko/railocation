@@ -44,7 +44,7 @@
       google.maps.event.addListener(markers[key], 'click', bind(highlightMarker, markers[key]));
     }
     
-    highlightMarker(green_marker = markers["#{params[:from]}"])
+    highlightMarker(green_marker = markers["#{h params[:from]}"])
   }
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 %ol
