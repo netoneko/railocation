@@ -29,8 +29,8 @@
   - location = "#{params[:latitude]},#{params[:longitude]}"
   %h2= "#{t.location.yours}: #{location}"
   %img{:src => google_map_static_station(location) }
-  %ol
   - stations[0, 3].each do |station|
     =haml :station, :locals => {:station => station}
-  - stations.each do |station|
-    %li= "#{station[:name]} (#{station[:distance]})"
+  %ol
+    - stations.each do |station|
+      %li= "#{station[:name]} (#{station[:distance]})"
