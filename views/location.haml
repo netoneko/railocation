@@ -33,4 +33,4 @@
     =haml :station, :locals => {:station => station}
   %ol
     - stations.each do |station|
-      %li= "#{station[:name]} (#{station[:distance]})"
+      %li= "#{station[:name]} (#{station[:distance].to_i}#{t.location.meters})"

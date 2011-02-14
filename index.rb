@@ -107,7 +107,8 @@ helpers do
 			station_latitude = split.first.to_f
 			station_longitude = split.last.to_f
 			
-			distance = ((station_latitude - latitude) ** 2 + (station_longitude - longitude) ** 2) ** 1/2
+#			distance = ((station_latitude - latitude) ** 2 + (station_longitude - longitude) ** 2) ** 1/2
+			distance = get_distance_in_meters(station_latitude, station_longitude, latitude, longitude)
 			stations[name] = distance.to_f
 		end
 		
@@ -143,6 +144,16 @@ helpers do
   
   def get_route_list(city, type)
   	redis.smembers("#{get_postal_code(city)}:#{type}")
+  end
+  
+  def get_distance_in_meters(lat1, lon1, lat2, lon2)
+		dLat = (lat2-lat1) / 180 * Math::PI # Javascript functions in radians
+		dLon = (lon2-lon1) / 180 * Math::PI 
+		a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1/ 180 * Math::PI) * Math.cos(lat2/ 180 * Math::PI) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+		c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		6371 * c * 1000; # Distance in km
   end
 end
 

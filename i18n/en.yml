@@ -5,6 +5,7 @@ location:
   yours: You're here
   fail: Sorry, we can't determine your location.
   trying: We're trying to determine your location, please wait...
+  meters: m
 transport:
   station: Station
   route: Route
