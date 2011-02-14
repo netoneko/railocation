@@ -83,14 +83,14 @@ def build_routes(stations, results, replace, unable_to_locate)
   
   save_trams(ekb_trams_key, results.keys)
   
+  results.values.each do |station|
+    ekb_tram_custom_key_routes = "#{ekb_tram_stations_key}:#{station}:routes"
+    r.del ekb_tram_custom_key_routes
+  end
+  
   results.each_pair do |key, value|
     ekb_tram_custom_key = "#{ekb_trams_key}:#{key}"
     r.del ekb_tram_custom_key
-    
-    value.each do |station|
-      ekb_tram_custom_key_routes = "#{ekb_tram_stations_key}:#{station}:routes"
-      r.del ekb_tram_custom_key_routes
-    end
     
     value.each do |station|
       station = (replace.has_key? station) ? replace[station] : station
