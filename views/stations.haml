@@ -1,3 +1,4 @@
 %h2= t.location.stations
--stations.each do |station|
-  =haml :station, :locals => {:station => station}
+%ol
+  -stations.each do |name|
+    %li= link_to_station(city, route_type, name)

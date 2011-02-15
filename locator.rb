@@ -13,7 +13,7 @@ def locate(station)
    result = JSON.parse(data)
 
    # if the hash has 'Error' as a key, we raise an error
-   sleep(0.3)
+   sleep(0.1)
    if result['status'] != 'OK'
 	   puts "web service error #{result['status']}" 
 	   return nil

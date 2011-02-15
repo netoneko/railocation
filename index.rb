@@ -80,7 +80,11 @@ helpers do
 	end
   
   def link_to_route(city, route_type, route_id, station)
-  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?from=#{station}\"} #{route_id}"
+  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?from=#{h station}\"} #{route_id}"
+  end
+  
+  def link_to_station(city, route_type, name)
+  	haml "%a{:href => \"/city/#{city}/#{route_type}/station/#{h name}\"} #{h name}"
   end
   
   @@redis = Redis.new(:port => 6790)
@@ -172,12 +176,16 @@ get '/location' do
 	haml :location, :locals => locals
 end
 
-get '/city/:city/station/:station_id' do |city, station_id|
+get '/city/:city/:route_type/stations' do |city, route_type|
+	haml :stations, :locals => {:city => city, :route_type => route_type, :stations => get_stations(city, route_type).keys.sort}
+end
+
+get '/city/:city/:route_type/station/:station_id' do |city, route_type, station_id|
 	station = get_station(city, 'tram', station_id)
 	haml :station, :locals => {:station => station}
 end
 
 get '/city/:city/:route_type/:route_id' do |city, route_type, route_id|
 	route = get_route(city, route_type, route_id)
-	haml :route, :locals => {:city => city, :route_id => route_id, :route_type => route_type, :route => route}
+	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route}
 end

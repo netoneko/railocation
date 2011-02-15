@@ -49,4 +49,4 @@
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 %ol
   - route.each_pair do |key, value|
-    %li= "#{key} (#{value})"
+    %li= "#{link_to_station(city, route_type, key)} (#{value})"

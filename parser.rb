@@ -50,10 +50,18 @@ def save_stations(stations, do_locate)
   r.del ekb_tram_stations_key
   
   ekb_coords = '56.837814,60.596842'
- 
+  explicit_coords = {'комсомольская' => '56.841086,60.660045', 'площадь 1905 года' => '56.837406, 60.595999', 'ботаническая' => '56.79600,60.61063', 'виз' => '56.839184,60.55595', 
+  'шарташ' => '56.864469,60.66985', 'первомайская' => '56.845557, 60.644982', 'декабристов-луначарского' => '56.824698,60.626614', 'куйбышева-луначарского' => '56.82946, 60.62485', 'куйбышева' => '56.82532,60.58679'}
+  
   unable_to_locate = []
   stations.each do |station|
-    coords = do_locate ? extract_geocode(locate(station)) : ""
+    coords = ""
+    if explicit_coords.has_key? station
+      coords = explicit_coords[station]
+    elsif do_locate
+      coords = extract_geocode(locate(station))
+    end
+    
     if coords.nil? || coords == ekb_coords
       unable_to_locate << station
     else
