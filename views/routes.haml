@@ -1,0 +1,4 @@
+%h2= t.transport.routes
+%ul
+  -routes.each do |name|
+    %li= link_to_route(city, route_type, name, '')

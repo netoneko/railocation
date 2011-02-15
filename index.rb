@@ -185,6 +185,10 @@ get '/city/:city/:route_type/station/:station_id' do |city, route_type, station_
 	haml :station, :locals => {:station => station}
 end
 
+get '/city/:city/:route_type/routes' do |city, route_type|
+	haml :routes, :locals => {:city => city, :route_type => route_type, :routes => get_route_list(city, route_type).sort { |a, b| a.to_i <=> b.to_i }}
+end
+
 get '/city/:city/:route_type/:route_id' do |city, route_type, route_id|
 	route = get_route(city, route_type, route_id)
 	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route}
