@@ -3,7 +3,7 @@ require 'json'
 require 'net/http'
 
 def locate(station)
-	 address = URI.encode("Yekaterinburg, #{station} station")
+	 address = URI.encode("Yekaterinburg, #{station.gsub('-', '/')} station")
    url = "http://maps.googleapis.com/maps/api/geocode/json?address=#{address}&sensor=false"
    resp = Net::HTTP.get_response(URI.parse(url))
    data = resp.body

@@ -1,5 +1,5 @@
 INSTALLATION
-1. $ sudo gem install sinatra sinatra-r18n haml thin redis SystemTimer unicode_utils --no-rdoc --no-ri
+1. $ sudo gem install sinatra sinatra-r18n haml thin redis unicode_utils --no-rdoc --no-ri
 2. ON LINUX 
  $ sudo apt-get install redis-server
  ON MAC OS X 

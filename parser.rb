@@ -8,24 +8,19 @@ require 'normalize.rb'
 def parse_input_files(routes, stations, results)
   routes.each do |i|
     text = ""
-    
-    File.open("tmp/tram_route_#{i}.html", "r") do |infile|
-      while (line = infile.gets)
-        line = Iconv.iconv('utf-8', 'cp1251', line)[0]
-        break if !line.index("<li>Обратный маршрут").nil?
-        if !line.index("Остановки:").nil?
-          text << line 
-        end
-      end
-    end
-    
+
     path = []
-    text.split('<br>').each do |line|
-      line = line.strip()
-      if not (index = line.index(')')).nil?
-        station = normalize(line[index + 1, line.size])
-        stations << station
-        path << station
+    
+    File.open("data/yekaterinburg/tram/#{i}", "r") do |infile|
+      while (line = infile.gets)
+        break if line.nil?
+  
+        line = line.strip()
+        if not (index = line.index(')')).nil?
+          station = normalize(line[index + 1, line.size])
+          stations << station
+          path << station
+        end
       end
     end
   
@@ -67,6 +62,8 @@ def save_stations(stations, do_locate)
   end
   
   stations.replace(r.hkeys(ekb_tram_stations_key))
+  puts stations.sort
+  
   unable_to_locate
 end
 
@@ -106,6 +103,8 @@ def build_routes(stations, results, replace, unable_to_locate)
     end
   end
 
+  exit 0
+
   puts '*' * 10 + " list of trams"
   puts r.smembers(ekb_trams_key).sort
   
@@ -116,16 +115,16 @@ def build_routes(stations, results, replace, unable_to_locate)
     puts r.hgetall(ekb_tram_custom_key)
   end
 
-  exit 0
+
   puts '*' * 10
   puts ekb_tram_stations_key
-  puts r.hkeys(ekb_tram_stations_key).size
+  puts r.hkeys(ekb_tram_stations_key) #.size
 #  puts r.hgetall(ekb_tram_stations_key)
-  puts unable_to_locate
+#  puts unable_to_locate
 end
 
 def parse_all 
-  routes = ((1..27).collect{|i| i} + (31..33).collect{|i| i})
+  routes = (1..33).collect{|i| i} - [12, 28, 29, 30]
 #  routes = [27]
   stations = []
   results = {}
@@ -135,6 +134,8 @@ def parse_all
   replace = cleanup_stations(stations)
   unable_to_locate = save_stations(stations, true)
   
+  puts unable_to_locate
+
   build_routes(stations, results, replace, unable_to_locate)   
   
 end

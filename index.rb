@@ -10,7 +10,7 @@ require 'redis'
 set :static, true
 set :server, 'thin'
 set :bind, 'localhost' # Работать на http://127.0.0.1:4567
-set :default_locale, 'en'
+set :default_locale, 'ru'
 set :sessions, true
 
 helpers do
@@ -97,7 +97,6 @@ helpers do
   end
   
   def get_local_stations(latitude, longitude)
-		puts "#{latitude}, #{longitude}"
 		city = 'Yekaterinburg'
 		type = 'tram'
 		
@@ -107,7 +106,6 @@ helpers do
 			station_latitude = split.first.to_f
 			station_longitude = split.last.to_f
 			
-#			distance = ((station_latitude - latitude) ** 2 + (station_longitude - longitude) ** 2) ** 1/2
 			distance = get_distance_in_meters(station_latitude, station_longitude, latitude, longitude)
 			stations[name] = distance.to_f
 		end

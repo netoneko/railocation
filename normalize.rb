@@ -3,14 +3,20 @@ require 'text'
 require 'redis'
 require 'unicode_utils'
 
+def replace_start_with(key, big_word, small_word, big_again, start_with)
+  key.start_with?(start_with) ? key.sub(big_word, small_word).sub(small_word, big_again) : key
+end
+
 def normalize(key)
-  key = UnicodeUtils.downcase(key).gsub(',', '').gsub('.', '').strip()
-  key = key.sub('площадь', 'пл').sub('пл', 'площадь ') if key.start_with?('пл')
-  key = key.sub('пер ', 'переулок ')
-  key = key.sub('ул', '') if key.start_with?('ул')
-  key = key.sub('  ', ' ').sub(' - ', '').sub(' (конечная)', '').sub(' (электростанция)', '').sub(' (новомосковская)', '')
-  key = key.sub('театр музыкальной комедии', 'архитектурный институт').sub('протезно-ортопедическое предприятие', 'ортопедическое предприятие').sub('цпк и о', 'цпкио').sub('техническое ', 'тех').sub('янавря', 'января')
-  key.strip()
+  key = UnicodeUtils.downcase(key).gsub(',', '').gsub('.', '').gsub(' -', '-').gsub('- ', '-').gsub('(', '').gsub(')', '').gsub('-й', '').strip()
+  
+  key = replace_start_with(key, 'площадь', 'пл', 'площадь', 'пл')
+  key = replace_start_with(key, 'улица', 'ул', '', 'ул')
+  key = replace_start_with(key, 'переулок', 'пер', '', 'пер ')
+
+  key = key.sub('конечная', '').sub('электростанция', '').sub('новомосковская', '')
+  key = key.sub('театр музыкальной комедии', 'архитектурный институт').sub('протезно-ортопедическое предприятие', 'ортопедическое предприятие').sub('цпк и о', 'цпкио').sub('техническое училище', 'техучилище').sub('янавря', 'января').sub('пионеров','учителей').sub('новогородцевой', 'новгородцевой').sub('малый конный полуостров', 'малый конный').sub('-луначарского', '').sub('технический университет', '').sub('уту-упи', 'угту-упи').sub('тульский', 'новомосковская')
+  key.gsub('  ', ' ').strip()
 end
 
 def normalize_stations(keys)
