@@ -8,7 +8,7 @@ def replace_start_with(key, big_word, small_word, big_again, start_with)
 end
 
 def normalize(key)
-  key = UnicodeUtils.downcase(key).gsub(',', '').gsub('.', '').gsub(' -', '-').gsub('- ', '-').gsub('(', '').gsub(')', '').gsub('-й', '').strip()
+  key = UnicodeUtils.downcase(key).gsub(',', '').gsub('.', '').gsub(' -', '-').gsub('- ', '-').gsub('(', '').gsub(')', '').strip() #.gsub('-й', '')
   
   key = replace_start_with(key, 'площадь', 'пл', 'площадь', 'пл')
   key = replace_start_with(key, 'улица', 'ул', '', 'ул')
