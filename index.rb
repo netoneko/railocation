@@ -57,8 +57,6 @@ helpers do
 		color = 'red'
 		route.each_pair do |key, value|
 			if !key.end_with? ' '
-				color = 'orange' if key == source && route.has_key?(destination)
-				color = 'red' if key == destination
 				result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
 				title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});"
 			end
@@ -69,8 +67,26 @@ helpers do
   def google_map_js_route_color(route, source, destination)
   	result = ""
   	
-		result << "setMarkerColor(markers[\"#{h source}\"], 'blue');"
-    result << "setMarkerColor(markers[\"#{h destination}\"], 'green');"
+  	keys = route.collect {|pair| pair.first}
+  	keys.each_index do |index|
+  		puts "#{index} #{keys[index]}"
+  	end
+  	
+  	source_id = params[:source_id].to_i
+  	destination_id = params[:destination_id].to_i
+  	puts "#{source_id} #{destination_id}"
+  	source = keys[source_id].strip
+  	destination = keys[destination_id].strip
+  	
+  	indexes = (source_id < destination_id ? source_id..destination_id : destination_id..source_id).collect {|i| i}
+  	
+  	indexes.each do |index|
+	  	result << "setMarkerColor(markers[\"#{h keys[index].strip}\"], 'orange')\n"
+	  end
+  	
+  	puts "#{source} #{destination}"
+		result << "setMarkerColor(markers[\"#{h source}\"], 'blue')\n"
+    result << "setMarkerColor(markers[\"#{h destination}\"], 'green')\n"
 		result
   end
   
