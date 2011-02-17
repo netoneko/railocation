@@ -64,6 +64,73 @@ helpers do
 		result
   end
   
+  def _compute(keys, source, destination, source_id, destination_id)
+		close_destination = keys.index destination.strip
+		far_destination = keys.index("#{destination.strip} ") || close_destination
+
+		puts "#{close_destination} #{far_destination}"
+
+		close_source = keys.index source
+		far_source = keys.index("#{source} ") || close_source
+
+		puts "#{close_source} #{far_source}"
+
+		puts(path_close = (close_destination - close_source).abs)
+		puts(path_far = (far_destination - far_source).abs)
+		
+		if path_close <= path_far
+			source_id = close_source
+			destination_id = close_destination
+		else
+			source_id = far_source
+			destination_id = far_destination
+		end
+		
+		if source_id > destination_id
+			old_source_id = source_id
+			source_id = destination_id
+			destination_id = old_source_id
+		end
+		
+		[source_id, destination_id]
+  end  
+  
+  def compute(keys, source, destination, source_id, destination_id)
+		close_destination = keys.index destination.strip
+		far_destination = keys.index("#{destination.strip} ") || close_destination
+
+		puts "#{close_destination} #{far_destination}"
+
+		close_source = keys.index source
+		far_source = keys.index("#{source} ") || close_source
+
+		puts "#{close_source} #{far_source}"
+
+		puts(path_close = (close_destination - close_source).abs)
+		puts(path_far = (far_destination - far_source).abs)
+		puts((close_destination - close_source).abs)
+		puts(path_far = (far_destination - far_source).abs)
+		
+		return [close_source, far_destination] if close_source == far_source || close_destination == far_destination
+		
+		condition = path_close >= path_far
+		if condition
+			source_id = close_source
+			destination_id = close_destination
+		else
+			source_id = far_source
+			destination_id = far_destination
+		end
+		
+		if source_id > destination_id
+			old_source_id = source_id
+			source_id = destination_id
+			destination_id = old_source_id
+		end
+		
+		[source_id, destination_id]
+  end
+  
   def google_map_js_route_color(route, source_id, destination_id)
   	result = ""  	
   	keys = route.collect {|pair| pair.first}
@@ -75,16 +142,19 @@ helpers do
 		destination = keys[destination_id -= 1]
   	
   	if !source.nil? && !destination.nil?
-  		close = keys.index destination
-			far = keys.index "#{destination} "
-				
-			destination_id = far if source_id > destination_id && far != -1
-  	
 			indexes = []
-			if source_id < destination_id 
-				indexes = (source_id..destination_id).collect {|i| i}
-			else 
-				indexes = (0..destination_id).collect {|i| i} + (source_id..(keys.size - 1)).collect {|i| i}
+
+			if keys.first.strip == keys.last.strip
+				source_id, destination_id = compute(keys, source, destination, source_id, destination_id)
+				puts "HURR #{source_id}, #{destination_id}"
+				
+				if source_id < destination_id 
+					indexes = (source_id..destination_id).collect {|i| i}
+				else 
+					indexes = (0..destination_id).collect {|i| i} + (source_id..(keys.size - 1)).collect {|i| i}
+				end
+			else
+				source_id, destination_id = _compute(keys, source, destination, source_id, destination_id)
 			end
 			
 			indexes.each do |index|
