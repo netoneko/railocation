@@ -1,5 +1,5 @@
 %div.station
-  %h3= link_to_station(station[:city], station[:route_type], station[:name])
+  %h3= link_to_station(station[:city], station[:type], station[:name])
   %p
     #{t.transport.routes}:
     =station[:routes].collect{ |route_id| link_to_route(station[:city], station[:type], route_id, station[:name]) }.join(', ')

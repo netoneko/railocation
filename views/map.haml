@@ -9,11 +9,17 @@
   }
   
   function highlightMarker(marker) {
+    return
     if (green_marker != null)
-      green_marker.setIcon('http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png')
+      setMarkerColor(green_marker, 'red')
     green_marker = marker;
     
-    green_marker.setIcon('http://maps.google.com/intl/en_us/mapfiles/ms/micons/green.png')
+    setMarkerColor(green_marker, 'green')
+  }
+
+  function setMarkerColor(marker, color) {
+    if (marker != null)
+      marker.setIcon('http://maps.google.com/intl/en_us/mapfiles/ms/micons/' + color + '.png')
   }
   
   function initialize() {
@@ -29,7 +35,7 @@
  
     var stationsCoordinates = [new google.maps.LatLng(#{route.values.join('), new google.maps.LatLng(')})];
 
-    #{google_map_js_route(route)}
+    #{google_map_js_route(route, source, destination)}
     
     var path = new google.maps.Polyline({
       path: stationsCoordinates,
@@ -44,9 +50,11 @@
       google.maps.event.addListener(markers[key], 'click', bind(highlightMarker, markers[key]));
     }
     
-    highlightMarker(green_marker = markers["#{h params[:from]}"])
+    setMarkerColor(markers["#{h source}"], 'blue')
+    setMarkerColor(markers["#{h destination}"], 'green')
   }
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
-%ol
-  - route.each_pair do |key, value|
-    %li= "#{link_to_station(city, route_type, key)} (#{value})"
+-if !defined?(no_list)
+  %ol
+    - route.each_pair do |key, value|
+      %li= "#{link_to_station(city, route_type, key)} (#{value})"

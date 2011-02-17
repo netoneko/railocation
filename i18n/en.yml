@@ -6,6 +6,10 @@ location:
   fail: Sorry, we can't determine your location.
   trying: We're trying to determine your location, please wait...
   meters: m
+time:
+  hours: h.
+  minutes: min.
+  seconds: s.
 transport:
   station: Station
   route: Route
@@ -14,3 +18,8 @@ transport:
   bus.short: B
   tram: tram
   tram.short: T
+checkin:
+  moved_from: moved from station
+  moved_to: to station
+  on_route: on route
+  for: for

@@ -6,6 +6,10 @@ location:
   fail: Извините, мы не смогли определить ваше местоположение.
   trying: Определяем ваше местоположение, пожалуйста, подождите...
   meters: м
+time:
+  hours: ч.
+  minutes: мин.
+  seconds: с.
 transport:
   station: Станция
   route: Маршрут
@@ -14,3 +18,8 @@ transport:
   bus.short: A
   tram: Трамвай
   tram.short: T
+checkin:
+  moved_from: переместился с остановки
+  moved_to: на остановку
+  on_route: по маршруту
+  for: за

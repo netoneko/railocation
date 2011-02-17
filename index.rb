@@ -52,11 +52,14 @@ helpers do
   	basic_url << "&sensor=false"
   end
   
-  def google_map_js_route(route)
+  def google_map_js_route(route, source, destination)
   	result = ""
+		color = 'red'
 		route.each_pair do |key, value|
+			color = 'orange' if key == source && route.has_key?(destination)
+			color = 'red' if key == destination
 			result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
-      title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red.png'});"
+      title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});"
     end
 		result
   end
@@ -80,12 +83,17 @@ helpers do
 	end
   
   def link_to_route(city, route_type, route_id, station)
-  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?from=#{h station}\"} #{route_id}"
+  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?source=#{h station}\"} #{route_id}"
   end
   
   def link_to_station(city, route_type, name)
   	haml "%a{:href => \"/city/#{city}/#{route_type}/station/#{h name}\"} #{h name}"
   end
+  
+	def print_time(str)
+		split = str.split(':')
+		"#{split[0]}#{t.time.hours} #{split[1]}#{t.time.minutes} #{split[2]}#{t.time.seconds}"
+	end
   
   @@redis = Redis.new(:port => 6790)
   def redis
@@ -181,7 +189,7 @@ get '/city/:city/:route_type/stations' do |city, route_type|
 end
 
 get '/city/:city/:route_type/station/:station_id' do |city, route_type, station_id|
-	station = get_station(city, 'tram', station_id)
+	station = get_station(city, route_type, station_id)
 	haml :station, :locals => {:station => station}
 end
 
@@ -191,5 +199,16 @@ end
 
 get '/city/:city/:route_type/:route_id' do |city, route_type, route_id|
 	route = get_route(city, route_type, route_id)
-	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route}
+	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route, :source => params[:source], :destination => params[:destination]}
+end
+
+get '/user/:username/checkin/:id' do |username, checkin_id|
+	check_in = {:route => '23', :route_type => 'tram', :city => 'Yekaterinburg',
+		:source => {:name => 'учителей', :index => '11', :time => '2011-02-17 03:34:48 +0500'}, 
+		:destination => {:name => 'управление дороги', :index => '15', :time => '2011-02-17 03:50:54 +0500'},
+		:distance => {:stations => '2', :meters => '802', :time => '00:16:06'}}
+		
+	route = get_route(check_in[:city], check_in[:route_type], check_in[:route])
+	user = {:name => username}
+	haml :checkin, :locals => {:check_in => check_in, :user => user, :route => route}
 end

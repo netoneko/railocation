@@ -2,4 +2,4 @@
 %p #{city}
 -if params[:from]
 	%p #{t.transport.station} #{params[:from]}
-= haml :map, :locals => {:route => route, :city => city, :route_type => route_type}
+= haml :map, :locals => {:route => route, :city => city, :route_type => route_type, :source => source, :destination => destination}
