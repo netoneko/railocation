@@ -56,11 +56,21 @@ helpers do
   	result = ""
 		color = 'red'
 		route.each_pair do |key, value|
-			color = 'orange' if key == source && route.has_key?(destination)
-			color = 'red' if key == destination
-			result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
-      title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});"
+			if !key.end_with? ' '
+				color = 'orange' if key == source && route.has_key?(destination)
+				color = 'red' if key == destination
+				result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
+				title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});"
+			end
     end
+		result
+  end
+  
+  def google_map_js_route_color(route, source, destination)
+  	result = ""
+  	
+		result << "setMarkerColor(markers[\"#{h source}\"], 'blue');"
+    result << "setMarkerColor(markers[\"#{h destination}\"], 'green');"
 		result
   end
   

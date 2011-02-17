@@ -50,8 +50,7 @@
       google.maps.event.addListener(markers[key], 'click', bind(highlightMarker, markers[key]));
     }
     
-    setMarkerColor(markers["#{h source}"], 'blue')
-    setMarkerColor(markers["#{h destination}"], 'green')
+    #{google_map_js_route_color(route, source, destination)}
   }
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 -if !defined?(no_list)
