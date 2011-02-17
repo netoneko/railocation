@@ -14,4 +14,4 @@
     #{t.checkin.for} 
     %span{:style => 'color: gray'} 
       #{print_time check_in[:distance][:time]}
-  = haml :map, :locals => {:route => route, :city => check_in[:city], :route_type => check_in[:route_type], :no_list => true, :source => check_in[:source][:name], :destination => check_in[:destination][:name]}
+  = haml :map, :locals => {:route => route, :city => check_in[:city], :route_type => check_in[:route_type], :no_list => true, :source_id => check_in[:source][:index].to_i, :destination_id => check_in[:destination][:index].to_i}

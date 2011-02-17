@@ -52,7 +52,7 @@ helpers do
   	basic_url << "&sensor=false"
   end
   
-  def google_map_js_route(route, source, destination)
+  def google_map_js_route(route)
   	result = ""
 		color = 'red'
 		route.each_pair do |key, value|
@@ -64,29 +64,37 @@ helpers do
 		result
   end
   
-  def google_map_js_route_color(route, source, destination)
-  	result = ""
-  	
+  def google_map_js_route_color(route, source_id, destination_id)
+  	result = ""  	
   	keys = route.collect {|pair| pair.first}
-  	keys.each_index do |index|
-  		puts "#{index} #{keys[index]}"
-  	end
   	
-  	source_id = params[:source_id].to_i
-  	destination_id = params[:destination_id].to_i
-  	puts "#{source_id} #{destination_id}"
-  	source = keys[source_id].strip
-  	destination = keys[destination_id].strip
+  	source_id = -9000 if source_id == 0 || source_id.nil?
+  	destination_id = -9000 if destination_id == 0 || destination_id.nil?
   	
-  	indexes = (source_id < destination_id ? source_id..destination_id : destination_id..source_id).collect {|i| i}
+   	source = keys[source_id -= 1]
+		destination = keys[destination_id -= 1]
   	
-  	indexes.each do |index|
-	  	result << "setMarkerColor(markers[\"#{h keys[index].strip}\"], 'orange')\n"
+  	if !source.nil? && !destination.nil?
+  		close = keys.index destination
+			far = keys.index "#{destination} "
+				
+			destination_id = far if source_id > destination_id && far != -1
+  	
+			indexes = []
+			if source_id < destination_id 
+				indexes = (source_id..destination_id).collect {|i| i}
+			else 
+				indexes = (0..destination_id).collect {|i| i} + (source_id..(keys.size - 1)).collect {|i| i}
+			end
+			
+			indexes.each do |index|
+				result << "setMarkerColor(markers[\"#{h keys[index].strip}\"], 'orange')\n"
+			end
 	  end
   	
-  	puts "#{source} #{destination}"
-		result << "setMarkerColor(markers[\"#{h source}\"], 'blue')\n"
-    result << "setMarkerColor(markers[\"#{h destination}\"], 'green')\n"
+#  	puts "#{source} #{destination}"
+		result << "setMarkerColor(markers[\"#{h source.strip}\"], 'blue')\n" if !source.nil?
+    result << "setMarkerColor(markers[\"#{h destination.strip}\"], 'green')\n" if !destination.nil?
 		result
   end
   
@@ -181,6 +189,15 @@ helpers do
   def get_route_list(city, type)
   	redis.smembers("#{get_postal_code(city)}:#{type}")
   end
+
+	def extract_int_from_params(key)
+		begin
+			return params[key].to_i if !params[key].nil?
+		rescue
+		
+		end
+		return nil
+	end
   
   def get_distance_in_meters(lat1, lon1, lat2, lon2)
 		dLat = (lat2-lat1) / 180 * Math::PI # Javascript functions in radians
@@ -225,14 +242,15 @@ end
 
 get '/city/:city/:route_type/:route_id' do |city, route_type, route_id|
 	route = get_route(city, route_type, route_id)
-	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route, :source => params[:source], :destination => params[:destination]}
+	
+	haml :route, :locals => {:city => city, :route_id => route_id.force_encoding('utf-8'), :route_type => route_type, :route => route, :source_id => extract_int_from_params(:source_id), :destination_id => extract_int_from_params(:destination_id)}
 end
 
 get '/user/:username/checkin/:id' do |username, checkin_id|
 	check_in = {:route => '23', :route_type => 'tram', :city => 'Yekaterinburg',
-		:source => {:name => 'учителей', :index => '11', :time => '2011-02-17 03:34:48 +0500'}, 
-		:destination => {:name => 'управление дороги', :index => '15', :time => '2011-02-17 03:50:54 +0500'},
-		:distance => {:stations => '2', :meters => '802', :time => '00:16:06'}}
+		:source => {:name => 'учителей', :index => '12', :time => '2011-02-17 03:34:48 +0500'}, 
+		:destination => {:name => 'управление дороги', :index => '16', :time => '2011-02-17 03:42:54 +0500'},
+		:distance => {:stations => '2', :meters => '802', :time => '00:8:06'}}
 		
 	route = get_route(check_in[:city], check_in[:route_type], check_in[:route])
 	user = {:name => username}

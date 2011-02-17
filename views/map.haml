@@ -35,7 +35,7 @@
  
     var stationsCoordinates = [new google.maps.LatLng(#{route.values.join('), new google.maps.LatLng(')})];
 
-    #{google_map_js_route(route, source, destination)}
+    #{google_map_js_route(route)}
     
     var path = new google.maps.Polyline({
       path: stationsCoordinates,
@@ -50,7 +50,7 @@
       google.maps.event.addListener(markers[key], 'click', bind(highlightMarker, markers[key]));
     }
     
-    #{google_map_js_route_color(route, source, destination)}
+    #{google_map_js_route_color(route, source_id, destination_id)}
   }
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 -if !defined?(no_list)
