@@ -1,0 +1,49 @@
+%div#checkin_form{:style => 'display: none'}
+  %form#checkin{:method => 'post'}
+    %input{:type => 'hidden', :name => 'city', :value => "#{station[:city]}"}
+    %input{:type => 'hidden', :name => 'route_type', :value => "#{station[:type]}"}
+    %input{:type => 'hidden', :name => 'station', :value => "#{station[:name]}"}
+    - routes = station[:routes]
+    - if !start_station.nil?
+      - routes = station[:routes] & start_station[:routes]
+      %p
+        %input{:type => 'checkbox', :name => 'continue', :id => 'continue', :checked => 'false'}
+        %label{:for => 'continue'} #{t.checkin.continue} #{start_station[:name]})
+    %h4 #{t.transport.select_route}
+    %p
+      - routes.each do |route|
+        %input{:type => 'radio', :id => "route#{route}", :value => "#{route}", :name => 'route'}
+        %label{:for => "route#{route}"} #{route}
+      %input{:type => 'radio', :id => "route0", :value => "", :name => 'route', :checked => 'true'}
+      %label{:for => "route0"} #{t.transport.no_route}
+%div#result
+%p
+  %a.button#try_checkin{:href=> '#'} #{t.checkin.checkin}
+:javascript
+  function show_form(event){
+    event.stop();
+    $('station_data').style.display = 'none';
+    $('checkin_form').style.display = 'block';
+    try_checkin = $('try_checkin')
+    try_checkin.removeEvent('click', show_form)
+    try_checkin.innerHTML = '#{t.checkin.save}'
+    try_checkin.addEvent('click', post_data)
+  }
+
+  $('try_checkin').addEvent('click', show_form);
+  
+  function post_data(event){
+    event.stop();
+
+    new Request.HTML({
+      url: '/show_params',
+      method: 'post',
+      onRequest: function(){
+        $('result').set('text', 'loading...');
+      },
+
+      onComplete: function(response){
+        $('result').empty().adopt(response);
+      }
+    }).post($('checkin'));
+  }
