@@ -13,12 +13,17 @@ time:
 transport:
   station: Станция
   route: Маршрут
+  select_route: Выберите маршрут
+  no_route: Нет
   routes: Маршруты
   bus: Автобус
   bus.short: A
   tram: Трамвай
   tram.short: T
 checkin:
+  continue: Завершить маршрут (последняя остановка 
+  checkin: Отметиться здесь!
+  save: Сохранить
   moved_from: переместился с остановки
   moved_to: на остановку
   on_route: по маршруту

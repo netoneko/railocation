@@ -1,3 +1,8 @@
+%head
+  :css
+    h1, h2, h3, h4 { text-transform: uppercase; }
+    a.button { background-color: pink; border-radius: 7px; -moz-border-radius: 7px; padding: 5px; text-decoration: none; color: black; }
+  %script{:src => '/mootools.js'}
 %body{:onload=> "initialize()"}
   %div#content=yield
   %p#lang

@@ -138,8 +138,12 @@ helpers do
 		"#{(right + left)/2},#{(top + bottom)/2}"
 	end
   
-  def link_to_route(city, route_type, route_id, station)
-  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?source=#{h station}\"} #{route_id}"
+  def link_to_route(city, route_type, route_id)
+  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}\"} #{route_id}"
+  end
+  
+  def link_to_checkin(city, route_type, station)
+  	haml "%a.button{:href => \"/checkin/city/#{city}/#{route_type}/#{station}\"} #{t.checkin.checkin}"
   end
   
   def link_to_station(city, route_type, name)
@@ -190,11 +194,15 @@ helpers do
   def get_station(city, type, name)
   	name = name.force_encoding('utf-8').strip() if !name.frozen?
   	city = city.force_encoding('utf-8') if !city.frozen?
+
   	station = {}
+
+  	station[:coords] = redis.hget("#{get_postal_code(city)}:#{type}_stations", name)
+  	return nil if station[:coords].nil? || station[:coords].empty?
+  	
   	station[:name] = name
   	station[:routes] = get_routes_from_station(city, type, name)
   	station[:city] = city
-  	station[:coords] = redis.hget("#{get_postal_code(city)}:#{type}_stations", name)
   	station[:type] = type
   	
   	station
@@ -255,7 +263,8 @@ end
 
 get '/city/:city/:route_type/station/:station_id' do |city, route_type, station_id|
 	station = get_station(city, route_type, station_id)
-	haml :station, :locals => {:station => station}
+	start_station = get_station(city, route_type, params[:start_station])
+	haml :station, :locals => {:station => station, :start_station => start_station}
 end
 
 get '/city/:city/:route_type/routes' do |city, route_type|
@@ -277,4 +286,13 @@ get '/user/:username/checkin/:id' do |username, checkin_id|
 	route = get_route(check_in[:city], check_in[:route_type], check_in[:route])
 	user = {:name => username}
 	haml :checkin, :locals => {:check_in => check_in, :user => user, :route => route}
+end
+
+get '/checkin/city/:city/:route_type/:station_id' do |city, route_type, station_id|
+	station = get_station(city, route_type, station_id)
+	haml :checkin_form, :locals => {:station => station}
+end
+
+post '/show_params' do
+	"#{params}"
 end

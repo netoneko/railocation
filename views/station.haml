@@ -1,7 +1,9 @@
 %div.station
   %h3= link_to_station(station[:city], station[:type], station[:name])
-  %p
-    #{t.transport.routes}:
-    =station[:routes].collect{ |route_id| link_to_route(station[:city], station[:type], route_id, station[:name]) }.join(', ')
-  %p
-    %img{:src => google_map_static_station(station[:coords]) }
+  = haml :checkin_form, :locals => {:station => station, :start_station => start_station } if defined?(start_station)
+  %div#station_data
+    %p
+      #{t.transport.routes}:
+      =station[:routes].collect{ |route_id| link_to_route(station[:city], station[:type], route_id) }.join(', ')
+    %p
+      %img{:src => google_map_static_station(station[:coords]) }
