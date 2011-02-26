@@ -75,8 +75,8 @@ helpers do
 
 #		puts "#{close_source} #{far_source}"
 
-		puts(path_close = (close_destination - close_source).abs)
-		puts(path_far = (far_destination - far_source).abs)
+#		puts(path_close = (close_destination - close_source).abs)
+#		puts(path_far = (far_destination - far_source).abs)
 		
 		if path_close <= path_far
 			source_id = close_source
@@ -192,6 +192,8 @@ helpers do
   end
   
   def get_station(city, type, name)
+    return nil if name.nil? || name.empty?
+    
   	name = name.force_encoding('utf-8').strip() if !name.frozen?
   	city = city.force_encoding('utf-8') if !city.frozen?
 
