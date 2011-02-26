@@ -20,6 +20,9 @@ transport:
   bus.short: A
   tram: Трамвай
   tram.short: T
+  source: Пункт отправления
+  destination: Пункт назначения
+  directions: Инструкции
 checkin:
   continue: Завершить маршрут (последняя остановка 
   checkin: Отметиться здесь!

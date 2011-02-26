@@ -52,6 +52,12 @@
     
     #{google_map_js_route_color(route, source_id, destination_id)}
   }
+- source = get_station(city, route_type, route.keys[source_id])
+- destination = get_station(city, route_type, route.keys[destination_id])
+- if !source.nil? && !destination.nil?
+%h4 
+  %span{:style => "color: blue;"} #{source[:name]} 
+  %span{:style => "color: green;"} #{destination[:name]}
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 -if !defined?(no_list)
   %ol

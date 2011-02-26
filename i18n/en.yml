@@ -14,12 +14,15 @@ transport:
   station: Station
   route: Route
   routes: Routes
-  select_route: Выберите маршрут
+  select_route: Select route
   no_route: No
   bus: bus
   bus.short: B
   tram: tram
   tram.short: T
+  source: Source
+  destination: Destination
+  directions: Directions
 checkin:
   continue: Finish check in (last station 
   save: Save

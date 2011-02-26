@@ -2,8 +2,9 @@
 require 'json'
 require 'net/http'
 
-def locate(station)
-	 address = URI.encode("Yekaterinburg, #{station.gsub('-', '/')} station")
+def locate(query, looking_for_station)
+	 query = "#{query.gsub('-', '/')} station" if looking_for_station
+	 address = URI.encode("Yekaterinburg, #{query}")
    url = "http://maps.googleapis.com/maps/api/geocode/json?address=#{address}&sensor=false"
    resp = Net::HTTP.get_response(URI.parse(url))
    data = resp.body
@@ -48,4 +49,6 @@ def extract_geocode(location)
 	"#{geolocation['lat']},#{geolocation['lng']}"
 end
 
-#puts extract_geocode(locate('Вторчермет'))
+def split_coords(coords)
+	coords.split(',').collect {|c| c.to_f }
+end

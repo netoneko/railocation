@@ -59,7 +59,7 @@ def save_stations(stations, do_locate)
     if explicit_coords.has_key? station
       coords = explicit_coords[station]
     elsif do_locate
-      coords = extract_geocode(locate(station))
+      coords = extract_geocode(locate(station), true)
     end
     
     if coords.nil? || coords == ekb_coords

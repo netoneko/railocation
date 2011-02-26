@@ -16,6 +16,9 @@ set :sessions, true
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
+  
+  require 'locator.rb'
+  
   def mobile?
     @mobile = [/AppleWebKit.*Mobile/,/Android.*AppleWebKit/].any? {|r| request.env['HTTP_USER_AGENT'] =~ r} if @mobile.nil?
     @mobile
@@ -75,8 +78,8 @@ helpers do
 
 #		puts "#{close_source} #{far_source}"
 
-#		puts(path_close = (close_destination - close_source).abs)
-#		puts(path_far = (far_destination - far_source).abs)
+		puts(path_close = (close_destination - close_source).abs)
+		puts(path_far = (far_destination - far_source).abs)
 		
 		if path_close <= path_far
 			source_id = close_source
@@ -240,6 +243,11 @@ helpers do
 		c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 		6371 * c * 1000; # Distance in km
   end
+
+	def get_closest_station(address)
+  	latitude, longitude = split_coords(extract_geocode(locate(address, false)))
+		get_local_stations(latitude, longitude).first
+	end
 end
 
 before do
@@ -297,4 +305,14 @@ end
 
 post '/show_params' do
 	"#{params}"
+end
+
+get '/directions' do
+	locals = {}
+	if !params[:source].nil? || !params[:destination].nil?
+		locals[:source] = get_closest_station(params[:source])
+		locals[:destination] = get_closest_station(params[:destination])
+	end
+
+	haml :directions, :locals => locals
 end
