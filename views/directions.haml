@@ -1,0 +1,13 @@
+%h2 #{t.transport.directions}
+%form{:method => "get", :action => ""}
+  %input{:type => "text", :name => "source", :value => h(params[:source] || "#{t.transport.source}"), :onclick => "javascript:if (this.value == '#{t.transport.source}') this.value='';"}
+  %input{:type => "text", :name => "destination", :value => h(params[:destination] || "#{t.transport.destination}"), :onclick => "javascript:if (this.value == '#{t.transport.destination}') this.value='';"}
+  %input{:type => "submit"}
+-if defined?(source) && defined?(destination)
+  - routes = source[:routes] & destination[:routes]
+  - if !routes.empty?
+    %h3 #{t.transport.routes}
+    - routes.each do |route_id|
+      - route = get_route(source[:city], source[:type], route_id)
+      %h4 #{t.transport[source[:type]]} #{route_id}
+      =haml :map, :locals => {:route => route, :city => source[:city], :route_type => source[:type], :source_id => route.keys.index(source[:name]), :destination_id => route.keys.index(destination[:name]), :no_list => true}
