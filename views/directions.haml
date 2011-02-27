@@ -6,8 +6,9 @@
 -if defined?(source) && defined?(destination)
   - routes = source[:routes] & destination[:routes]
   - if !routes.empty?
-    %h3 #{t.transport.routes}
-    - routes.each do |route_id|
-      - route = get_route(source[:city], source[:type], route_id)
-      %h4 #{t.transport[source[:type]]} #{route_id}
-      =haml :map, :locals => {:route => route, :city => source[:city], :route_type => source[:type], :source_id => route.keys.index(source[:name]), :destination_id => route.keys.index(destination[:name]), :no_list => true}
+  %h3 #{t.transport.routes}
+  %ul
+  - routes.each do |route_id|
+    - route = get_route(source[:city], source[:type], route_id)
+    %li 
+      = link_to_map(source[:city], source[:type], route_id, route.keys.index(source[:name]) + 1, route.keys.index(destination[:name]) + 1, source_location, destination_location)

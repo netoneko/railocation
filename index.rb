@@ -60,11 +60,14 @@ helpers do
 		color = 'red'
 		route.each_pair do |key, value|
 			if !key.end_with? ' '
-				result << "markers['#{h key}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{value}), map: map,
-				title:\"#{h key}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});"
+				result << google_map_js_put_marker(key, value, color) 
 			end
     end
 		result
+  end
+  
+  def google_map_js_put_marker(name, location, color) 
+	  "markers['#{h name}'] = new google.maps.Marker({ position: new google.maps.LatLng(#{location}), map: map, title:\"#{h name}\", icon: 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/#{color}.png'});" if !location.nil?
   end
   
   def compute_path(keys, source, destination, source_id, destination_id)
@@ -143,6 +146,10 @@ helpers do
   
   def link_to_route(city, route_type, route_id)
   	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}\"} #{route_id}"
+  end
+
+  def link_to_map(city, route_type, route_id, source_id, destination_id, source_location, destination_location)
+  	haml "%a{:href => \"/city/#{city}/#{route_type}/#{route_id}?source_id=#{source_id}&destination_id=#{destination_id}&source_location=#{source_location}&destination_location=#{destination_location}\"} #{route_id}"
   end
   
   def link_to_checkin(city, route_type, station)
@@ -245,8 +252,9 @@ helpers do
   end
 
 	def get_closest_station(address)
-  	latitude, longitude = split_coords(extract_geocode(locate(address, false)))
-		get_local_stations(latitude, longitude).first
+		coords = extract_geocode(locate(address, false))
+  	latitude, longitude = split_coords(coords)
+		[get_local_stations(latitude, longitude).first, coords]
 	end
 end
 
@@ -310,8 +318,8 @@ end
 get '/directions' do
 	locals = {}
 	if !params[:source].nil? || !params[:destination].nil?
-		locals[:source] = get_closest_station(params[:source])
-		locals[:destination] = get_closest_station(params[:destination])
+		locals[:source], locals[:source_location] = get_closest_station(params[:source])
+		locals[:destination], locals[:destination_location] = get_closest_station(params[:destination])
 	end
 
 	haml :directions, :locals => locals

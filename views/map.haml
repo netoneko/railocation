@@ -1,3 +1,5 @@
+- source_location = nil if !defined?(source_location)
+- destination_location = nil if !defined?(destination_location)
 %script{:src=>"http://maps.google.com/maps/api/js?sensor=false"}
 :javascript
   var markers = {};
@@ -36,7 +38,9 @@
     var stationsCoordinates = [new google.maps.LatLng(#{route.values.join('), new google.maps.LatLng(')})];
 
     #{google_map_js_route(route)}
-    
+    #{google_map_js_put_marker("#{t.transport.source}", source_location, 'yellow')}
+    #{google_map_js_put_marker("#{t.transport.destination}", destination_location, 'pink')}
+
     var path = new google.maps.Polyline({
       path: stationsCoordinates,
       strokeColor: "#FF0000",
@@ -52,12 +56,15 @@
     
     #{google_map_js_route_color(route, source_id, destination_id)}
   }
-- source = get_station(city, route_type, route.keys[source_id])
-- destination = get_station(city, route_type, route.keys[destination_id])
-- if !source.nil? && !destination.nil?
-%h4 
-  %span{:style => "color: blue;"} #{source[:name]} 
-  %span{:style => "color: green;"} #{destination[:name]}
+- if !source_id.nil? && !destination_id.nil? && source_id.instance_of?(Fixnum) && destination_id.instance_of?(Fixnum)
+  %h4
+    - if !source_location.nil? && !destination_location.nil?
+      %span{:style => "color: yellow;"} #{t.transport.source}
+      %span{:style => "color: pink;"} #{t.transport.destination}
+      %br
+    %span{:style => "color: blue;"} #{route.keys[source_id]} 
+    %span{:style => "color: green;"} #{route.keys[destination_id]}
+
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 -if !defined?(no_list)
   %ol
