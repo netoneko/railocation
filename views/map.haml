@@ -62,8 +62,8 @@
       %span{:style => "color: yellow;"} #{t.transport.source}
       %span{:style => "color: pink;"} #{t.transport.destination}
       %br
-    %span{:style => "color: blue;"} #{route.keys[source_id]} 
-    %span{:style => "color: green;"} #{route.keys[destination_id]}
+    %span{:style => "color: blue;"} #{route.keys[source_id - 1]} 
+    %span{:style => "color: green;"} #{route.keys[destination_id - 1]}
 
 %div{:id=>"map_canvas", :style=>"width:500px; height:500px;"}
 -if !defined?(no_list)
